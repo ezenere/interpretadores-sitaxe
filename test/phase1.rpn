@@ -1,0 +1,87 @@
+# === VALORES SIMPLES ===
+(42)                                  # 42.0
+(3.14)                                # 3.14
+(0)                                   # 0.0
+(-7.5)                                # -7.5
+
+# === ADIÇÃO ===
+(3 4 +)                               # 7.0
+(1.5 2.5 +)                           # 4.0
+(0 0 +)                               # 0.0
+(-3 3 +)                              # 0.0
+
+# === SUBTRAÇÃO ===
+(10 3 -)                              # 7.0
+(0 5 -)                               # -5.0
+(2.5 1.5 -)                           # 1.0
+
+# === MULTIPLICAÇÃO ===
+(6 7 *)                               # 42.0
+(0.5 4 *)                             # 2.0
+(0 999 *)                             # 0.0
+(-3 -3 *)                             # 9.0
+
+# === DIVISÃO REAL ===
+(10 3 /)                              # 3.3333333333333335
+(7 2 /)                               # 3.5
+(1 0 /)                               # inf ou erro
+
+# === DIVISÃO INTEIRA ===
+(10 3 //)                             # 3
+(7 2 //)                              # 3
+(-7 2 //)                             # -4 ou -3 (depende da convenção)
+
+# === RESTO ===
+(10 3 %)                              # 1
+(7 2 %)                               # 1
+(9 3 %)                               # 0
+
+# === POTENCIAÇÃO ===
+(2 10 ^)                              # 1024.0
+(5 0 ^)                               # 1.0
+(3 3 ^)                               # 27.0
+(2.5 2 ^)                             # 6.25
+
+# === ANINHAMENTO SIMPLES ===
+(3 (4 5 +) *)                         # 27.0  → 3 * (4+5)
+((10 2 /) 3 +)                        # 8.0   → (10/2) + 3
+((2 3 +) (4 1 -) *)                   # 15.0  → (2+3) * (4-1)
+((8 2 /) (3 1 +) -)                   # 0.0   → (8/2) - (3+1)
+
+# === ANINHAMENTO PROFUNDO ===
+((2 3 +) ((4 5 *) 2 /) +)            # 15.0  → (2+3) + ((4*5)/2)
+(((1 2 +) (3 4 +) *) 5 -)            # 16.0  → ((1+2)*(3+4)) - 5
+(((2 3 ^) (1 1 +) *) 4 /)            # 4.0   → ((2^3)*(1+1)) / 4
+((((1 1 +) 2 *) 3 *) 4 *)            # 48.0  → (((1+1)*2)*3)*4
+
+# === MEMÓRIA: ARMAZENAR E LER ===
+(3.14 PI)                             # 3.14  → armazena 3.14 em PI
+(PI)                                  # 3.14  → lê PI
+(2.718 E)                             # 2.718 → armazena 2.718 em E
+(E)                                   # 2.718 → lê E
+((PI) (E) +)                          # 5.858 → PI + E
+(9.81 G)                              # 9.81  → armazena 9.81 em G
+(100 MASSA)                           # 100.0 → armazena 100 em MASSA
+((MASSA) (G) *)                       # 981.0 → MASSA * G (peso)
+
+# === MEMÓRIA NÃO INICIALIZADA ===
+(XPTO)                                # 0.0   → memória não inicializada
+
+# === RES: RESULTADO DE LINHAS ANTERIORES ===
+(10)                                  # 10.0       ← linha X
+(20)                                  # 20.0       ← linha X+1
+(0 RES)                               # 20.0       → resultado da linha anterior (20)
+(1 RES)                               # 20.0       → resultado de 1 linha atrás
+(2 RES)                               # 10.0       → resultado de 2 linhas atrás
+
+# === COMBINANDO RES COM OPERAÇÕES ===
+(5)                                   # 5.0
+(3)                                   # 3.0
+((1 RES) (0 RES) +)                   # 8.0   → 5 + 3
+
+# === CASO COMPLETO: FÓRMULA QUADRÁTICA SIMULADA ===
+(1 A)                                 # 1.0   → a = 1
+(5 B)                                 # 5.0   → b = 5
+(6 C)                                 # 6.0   → c = 6
+((B) (B) *)                           # 25.0  → b²
+(((0 RES) ((4 (A) *) (C) *) -) 1 ^)   # 1.0   → (b² - 4ac)^1 = 25-24 = 1
