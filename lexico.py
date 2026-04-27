@@ -24,7 +24,7 @@ def estadoOperadorDivisaoInteira(expr, index, tokens, parentheses):
         raise Exception('Expressão inacabada.')
 
     if expr[index] in " )":
-        tokens.append(Token(MATH, MATH_INT_DIV))
+        tokens.append(Token(index, T_MATH_INT_DIV))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     raise Exception(f"Caractere não reconhecido '{expr[index]}'")
@@ -37,27 +37,27 @@ def estadoOperadorUnico(expr, index, tokens, parentheses, token):
         return estadoOperadorDivisaoInteira(expr, index + 1, tokens, parentheses)
 
     if expr[index] in " )" and token == '+':
-        tokens.append(Token(MATH, MATH_PLUS))
+        tokens.append(Token(index, T_MATH_PLUS))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     if expr[index] in " )" and token == '-':
-        tokens.append(Token(MATH, MATH_MINUS))
+        tokens.append(Token(index, T_MATH_MINUS))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     if expr[index] in " )" and token == '*':
-        tokens.append(Token(MATH, MATH_TIMES))
+        tokens.append(Token(index, T_MATH_TIMES))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     if expr[index] in " )" and token == '/':
-        tokens.append(Token(MATH, MATH_FLOAT_DIV))
+        tokens.append(Token(index, T_MATH_FLOAT_DIV))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     if expr[index] in " )" and token == '%':
-        tokens.append(Token(MATH, MATH_MODULLUS))
+        tokens.append(Token(index, T_MATH_MODULLUS))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     if expr[index] in " )" and token == '^':
-        tokens.append(Token(MATH, MATH_EXPONENTIAL))
+        tokens.append(Token(index, T_MATH_EXPONENTIAL))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     raise Exception(f"Caractere não reconhecido '{expr[index]}'")
@@ -81,7 +81,7 @@ def estadoPontoFlutuante(expr, index, tokens, parentheses, token):
         return estadoPontoFlutuante(expr, index + 1, tokens, parentheses, token)
 
     if expr[index] in ' )':
-        tokens.append(Token(FLOAT, float(token)))
+        tokens.append(Token(index, T_FLOAT, float(token)))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     raise Exception(f"Caractere não reconhecido '{expr[index]}'")
@@ -99,7 +99,7 @@ def estadoInteiro(expr, index, tokens, parentheses, token):
         return estadoPonto(expr, index + 1, tokens, parentheses, token)
 
     if expr[index] in ' )':
-        tokens.append(Token(INT, int(token)))
+        tokens.append(Token(index, T_INT, int(token)))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     raise Exception(f"Caractere não reconhecido '{expr[index]}'")
@@ -112,7 +112,7 @@ def estadoPalavraComNumero(expr, index, tokens, parentheses, token):
         return estadoPalavraComNumero(expr, index + 1, tokens, parentheses, token + expr[index])
     
     if expr[index] in ' )':
-        tokens.append(Token(VARIABLE, token))
+        tokens.append(Token(index, T_VAR, token))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     raise Exception(f"Caractere não reconhecido '{expr[index]}'")
@@ -125,7 +125,7 @@ def estadoPalavra(expr, index, tokens, parentheses, token):
         return estadoPalavraComNumero(expr, index + 1, tokens, parentheses, token + expr[index])
 
     if expr[index] in ' )':
-        tokens.append(Token(VARIABLE, token))
+        tokens.append(Token(index, T_VAR, token))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     raise Exception(f"Caractere não reconhecido '{expr[index]}'")
@@ -141,7 +141,7 @@ def estadoKeywordR(expr, index, tokens, parentheses, token):
         return estadoPalavraComNumero(expr, index + 1, tokens, parentheses, token + expr[index])
 
     if expr[index] in ' )':
-        tokens.append(Token(VARIABLE, token))
+        tokens.append(Token(index, T_VAR, token))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     raise Exception(f"Caractere não reconhecido '{expr[index]}'")
@@ -157,7 +157,7 @@ def estadoKeywordRE(expr, index, tokens, parentheses, token):
         return estadoPalavraComNumero(expr, index + 1, tokens, parentheses, token + expr[index])
 
     if expr[index] in ' )':
-        tokens.append(Token(VARIABLE, token))
+        tokens.append(Token(index, T_VAR, token))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     raise Exception(f"Caractere não reconhecido '{expr[index]}'")
@@ -170,7 +170,7 @@ def estadoKeywordRES(expr, index, tokens, parentheses, token):
         return estadoPalavraComNumero(expr, index + 1, tokens, parentheses, token + expr[index])
 
     if expr[index] in ' )':
-        tokens.append(Token(KEYWORD, KEYWORD_RES))
+        tokens.append(Token(index, T_KW_RES))
         return estadoParenteses(expr, index, tokens, parentheses)
 
     raise Exception(f"Caractere não reconhecido '{expr[index]}'")
@@ -197,7 +197,7 @@ def estadoParenteses(expr, index, tokens, parentheses):
     # Se for abre parenteses, vá para o estado de abertura de parênteses e incremente 
     # um parentese de abertura a mais, além de adiconar o parentese anterior aos tokens
     if expr[index] == '(':
-        tokens.append(Token(PARENTHESES,PARENTHESES_L))
+        tokens.append(Token(index, T_L_PARENTHESIS))
         return estadoParenteses(expr, index + 1, tokens, parentheses + 1)
 
     # Se for um número, entrar em estado numérico
@@ -227,13 +227,13 @@ def estadoParenteses(expr, index, tokens, parentheses):
     # Se for fecha parênteses e ainda tiver parentese na stack, então entra em estado de 
     # parenteses com um token de parêntese fecha parenteses menos um token de parentese aberto
     if expr[index] == ')' and parentheses > 1:
-        tokens.append(Token(PARENTHESES, PARENTHESES_R))
+        tokens.append(Token(index, T_R_PARENTHESIS))
         return estadoParenteses(expr, index + 1, tokens, parentheses - 1)
 
     # Se for fecha parêntese e tiver somente um parêntese na stack, então o estado vai para estado
     # de fim de expressão com um token de parêntese a mais.
     if expr[index] == ')' and parentheses == 1:
-        tokens.append(Token(PARENTHESES, PARENTHESES_R))
+        tokens.append(Token(index, T_R_PARENTHESIS))
         return estadoFim(expr, index + 1, tokens)
     
     # Se não for nada acima, estado de erro por caractere não reconhecido 

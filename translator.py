@@ -53,25 +53,25 @@ def keywordRES(nRES):
 
 def operacaoMatematica(operation):
     diretas = {
-        MATH_PLUS: "ADD",
-        MATH_MINUS: "SUB",
-        MATH_TIMES: "MUL",
-        MATH_FLOAT_DIV: "DIV"
+        T_MATH_PLUS: "ADD",
+        T_MATH_MINUS: "SUB",
+        T_MATH_TIMES: "MUL",
+        T_MATH_FLOAT_DIV: "DIV"
     }
     
-    if operation in [MATH_PLUS, MATH_MINUS, MATH_TIMES, MATH_FLOAT_DIV]:
+    if operation in [T_MATH_PLUS, T_MATH_MINUS, T_MATH_TIMES, T_MATH_FLOAT_DIV]:
         return f"""
     V{diretas[operation]}.F64 d0, d0, d1
 """
-    elif operation == MATH_INT_DIV:
+    elif operation == T_MATH_INT_DIV:
         return """
     BL  fintd
 """
-    elif operation == MATH_MODULLUS:
+    elif operation == T_MATH_MODULLUS:
         return """
     BL  fmod
 """
-    elif operation == MATH_EXPONENTIAL:
+    elif operation == T_MATH_EXPONENTIAL:
         return """
     BL  fpow
 """
@@ -97,18 +97,18 @@ def traduzirParaARMv7(parsed):
         vezesRes = 0
         for i in range(len(expression)):
             token = expression[i]
-            if token.kind == PARENTHESES:
+            if token.kind == T_L_PARENTHESIS or token.kind == T_R_PARENTHESIS:
                 continue
-            if token.kind == INT or token.kind == FLOAT:
+            if token.kind == T_INT or token.kind == T_FLOAT:
                 # Adiciona número na pilha de variáveis
                 middle_code += numeroParaARMv7(token.value)
                 middle_code += adicionarParaAListaDaMemoria
 
-            if token.kind == MATH:
+            if token.kind in [T_MATH_PLUS, T_MATH_MINUS, T_MATH_TIMES, T_MATH_FLOAT_DIV, T_MATH_INT_DIV, T_MATH_MODULLUS, T_MATH_EXPONENTIAL]:
                 middle_code += pegarDoisNumeros
                 middle_code += operacaoMatematica(token.value)
                 middle_code += adicionarParaAListaDaMemoria
-            if token.kind == VARIABLE:
+            if token.kind == T_VAR:
                 if i == len(expression) - 2: # Penultimo item, significa que é uma atribuição ou uma leitura. O ultimo token sempre é ")".
                     if len(expression) > 3:
                         # Tem item na pilha da expressão, então é atribuição 
@@ -136,10 +136,9 @@ def traduzirParaARMv7(parsed):
                         middle_code += pegarValorNoEndereco(variables[token.value])
                     middle_code += adicionarParaAListaDaMemoria
 
-            if token.kind == KEYWORD:
-                if(token.value == KEYWORD_RES):
-                    middle_code += keywordRES(vezesRes)
-                    vezesRes += 1
+            if token.kind == T_KW_RES:
+                middle_code += keywordRES(vezesRes)
+                vezesRes += 1
 
     return f"""
 @ Endereço base da memória de pilha de resultados

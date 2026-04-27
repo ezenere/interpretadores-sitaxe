@@ -15,15 +15,15 @@ RED    = '\033[31m'
 MAGENTA = '\033[35m'
 
 MATH_SYMBOLS = {
-    MATH_PLUS: '+', MATH_MINUS: '-', MATH_TIMES: '*',
-    MATH_FLOAT_DIV: '/', MATH_INT_DIV: '//', MATH_MODULLUS: '%',
-    MATH_EXPONENTIAL: '^',
+    T_MATH_PLUS: '+', T_MATH_MINUS: '-', T_MATH_TIMES: '*',
+    T_MATH_FLOAT_DIV: '/', T_MATH_INT_DIV: '//', T_MATH_MODULLUS: '%',
+    T_MATH_EXPONENTIAL: '^',
 }
 
 MATH_NAMES = {
-    MATH_PLUS: 'Soma', MATH_MINUS: 'Subtração', MATH_TIMES: 'Multiplicação',
-    MATH_FLOAT_DIV: 'Divisão', MATH_INT_DIV: 'Divisão inteira',
-    MATH_MODULLUS: 'Módulo', MATH_EXPONENTIAL: 'Exponenciação',
+    T_MATH_PLUS: 'Soma', T_MATH_MINUS: 'Subtração', T_MATH_TIMES: 'Multiplicação',
+    T_MATH_FLOAT_DIV: 'Divisão', T_MATH_INT_DIV: 'Divisão inteira',
+    T_MATH_MODULLUS: 'Módulo', T_MATH_EXPONENTIAL: 'Exponenciação',
 }
 
 
@@ -31,17 +31,19 @@ MATH_NAMES = {
 def reconstruir(tokens):
     parts = []
     for token in tokens:
-        if token.kind == PARENTHESES:
-            parts.append('(' if token.value == PARENTHESES_L else ')')
-        elif token.kind == INT:
+        if token.kind == T_L_PARENTHESIS:
+            parts.append('(')
+        elif token.kind == T_R_PARENTHESIS:
+            parts.append(')')
+        elif token.kind == T_INT:
             parts.append(str(token.value))
-        elif token.kind == FLOAT:
+        elif token.kind == T_FLOAT:
             parts.append(str(token.value))
-        elif token.kind == MATH:
-            parts.append(MATH_SYMBOLS.get(token.value, '?'))
-        elif token.kind == VARIABLE:
+        elif token.kind in [T_MATH_PLUS, T_MATH_MINUS, T_MATH_TIMES, T_MATH_FLOAT_DIV, T_MATH_INT_DIV, T_MATH_MODULLUS, T_MATH_EXPONENTIAL]:
+            parts.append(T_MATH_PLUS.__str__())
+        elif token.kind == T_VAR:
             parts.append(token.value)
-        elif token.kind == KEYWORD and token.value == KEYWORD_RES:
+        elif token.value == T_KW_RES:
             parts.append('RES')
 
     result = ''
@@ -60,27 +62,26 @@ def reconstruir(tokens):
 def exibirParsed(parsed):
     espacos = ''
     for token in parsed:
-        if token.kind == PARENTHESES:
-            if token.value == PARENTHESES_L:
+        if token.kind == T_L_PARENTHESIS or T_R_PARENTHESIS:
+            if token.value == T_L_PARENTHESIS:
                 print(f'{DIM}{espacos}({RESET}')
                 espacos += '  '
             else:
                 espacos = espacos[:-2]
                 print(f'{DIM}{espacos}){RESET}')
-        elif token.kind == MATH:
+        elif token.kind == [T_MATH_PLUS, T_MATH_MINUS, T_MATH_TIMES, T_MATH_FLOAT_DIV, T_MATH_INT_DIV, T_MATH_MODULLUS, T_MATH_EXPONENTIAL]:
             sym = MATH_SYMBOLS.get(token.value, '?')
             name = MATH_NAMES.get(token.value, '?')
             print(f'{espacos}{YELLOW}Operador: {BOLD}{sym}{RESET} {DIM}({name}){RESET}')
-        elif token.kind == KEYWORD:
-            if token.value == KEYWORD_RES:
-                print(f'{espacos}{MAGENTA}Keyword: {BOLD}RES{RESET}')
-        elif token.kind == FLOAT:
+        elif token.kind == T_KW_RES:
+            print(f'{espacos}{MAGENTA}Keyword: {BOLD}RES{RESET}')
+        elif token.kind == T_FLOAT:
             print(f'{espacos}{CYAN}Float: {BOLD}{token.value}{RESET}')
-        elif token.kind == INT:
+        elif token.kind == T_INT:
             print(f'{espacos}{CYAN}Int: {BOLD}{token.value}{RESET}')
-        elif token.kind == VARIABLE:
+        elif token.kind == T_VAR:
             print(f'{espacos}{GREEN}Variável: {BOLD}{token.value}{RESET}')
-        elif token.kind == OPERATION:
+        elif token.kind == T_KW_RES:
             print(f'{espacos}{RED}OPERAÇÃO{RESET}')
 
 
