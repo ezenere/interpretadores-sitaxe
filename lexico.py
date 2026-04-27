@@ -238,3 +238,23 @@ def estadoParenteses(expr, index, tokens, parentheses):
     
     # Se não for nada acima, estado de erro por caractere não reconhecido 
     raise Exception(f"Caractere não reconhecido '{expr[index]}'")
+
+def parseLexical(expr, index = 0):
+    # Se a expressão acabar, então a expressão não acabou em um estado aceitável, então erro.
+    if index == len(expr):
+        raise Exception('Expressão inacabada.')
+
+    # Se for espaço, ignore e vá pro próximo indice
+    if expr[index] == ' ':
+        return parseLexical(expr, index + 1)
+    
+    # Se for abre parenteses, vá para o estado de abertura de parênteses
+    if expr[index] == '(':
+        return estadoParenteses(expr, index, [], 0)
+    
+    # Se for # entra em estado de comentário
+    if expr[index] == '#':
+        return estadoComentario(expr, index, [])
+        
+    # Se não for nada acima, estado de erro por caractere não reconhecido 
+    raise Exception(f"Caractere não reconhecido '{expr[index]}'")
